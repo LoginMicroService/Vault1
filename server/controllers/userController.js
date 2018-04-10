@@ -1,6 +1,7 @@
 const userModel = require("../models/userModel");
 var validator = require('validator');
 const userController = {};
+const bcryptjs = require("bcryptjs"); 
 
 userController.verifyJWT = (req, res) => {
 
@@ -50,21 +51,40 @@ userController.createUser = (req, res, next) => {
     const password = res.locals.password;
     const email = res.locals.email;
     const phone = res.locals.phone;
-    userModel
-      .create({ username, password, email, phone })
-      .then(result => {
-        res.locals.user = result;
-        res.json(result);
-        //next();
-      })
-      .catch(err => {
-        //console.log(err);
-        //res.json(JSON.stringify(err));
-        res.json({ error: "validation" });
-        //next();
-      });
-  } else {
-      console.log('failed tests!!!');
+    // BCRYPT - ENCRYPTING PASSWORD
+    bcryptjs.genSalt(10, (err, salt)=>{
+        if(err){
+            console.log("GENSALT ERROR:",err); 
+            return; 
+        }
+        else{
+            bcryptjs.hash(password, salt, (err, bcryptedPassword)=>{
+                if(err){
+                    console.log("ERROR INSIDE USERCONTROLLER:", err)
+                }
+                else{ 
+                    let password = bcryptedPassword;
+                    // DATABASE - SAVING NEW USER TO DB
+                    userModel
+                    .create({ username, password, email, phone })
+                    .then((result) => {
+                    res.locals.user = result;
+                    res.json(result);
+                    //next();
+                    })
+                    .catch((err) => {
+                    //console.log(err);
+                    //res.json(JSON.stringify(err));
+                    res.json({ error: "validation" });
+                    //next();
+                    });
+                }
+            });
+        }    
+    }); 
+  } 
+  else {
+    console.log('failed tests!!!');
     res.json(validCrendtials);
   }
 };
