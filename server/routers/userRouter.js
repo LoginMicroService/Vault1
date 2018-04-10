@@ -10,7 +10,10 @@ router.post("/user/create",
 
 // router.post("/user/read", userController.readUser, (req, res) => {});
 
-// router.post("/user/update", userController.updateUser, (req, res) => {});
+// this option should only be available once the user has logged in and has the appropriate jwt
+router.post("/user/update", userController.updateUser, (req, res) => {
+
+});
 
 // router.post("/user/delete", userController.deleteUser, (req, res) => {});
 

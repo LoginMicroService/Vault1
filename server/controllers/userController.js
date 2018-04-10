@@ -2,6 +2,9 @@ const userModel = require("../models/userModel");
 var validator = require('validator');
 const userController = {};
 
+userController.verifyJWT = (req, res) => {
+
+}; 
 userController.validateCreateUser = (req, res) => {
   let { username, password, email, phone } = req.body;
   let validCrendtials = {};
@@ -77,16 +80,16 @@ userController.createUser = (req, res, next) => {
 //         next();
 //     });
 // };
-// userController.updateUser = (req, res, next) => {
-//     // make object conditionally based on what fields are being updated
-//     userModel.update({_id: id}, {$set: {}})
-//     .then(
+userController.updateUser = (req, res, next) => {
+    // make object conditionally based on what fields are being updated
+    userModel.update({_id: id}, {$set: {}})
+    .then(
 
-//     )
-//     .catch(
+    )
+    .catch(
 
-//     );
-// };
+    );
+};
 // userController.deleteUser = (req, res, next) => {
 //     let id = req.body.id;
 //     userModel.findByIdAndRemove(id)
