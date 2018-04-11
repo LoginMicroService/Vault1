@@ -1,70 +1,79 @@
-const bcrypt = require('bcrypt');
 const SALT_WORK_FACTOR = 10;
-//
 const userModel = require("../models/userModel");
 const userController = {};
+const bcryptjs = require("bcryptjs"); 
 
 
-userController.userCreate = (req, res, next) => {
+userController.createUser = (req, res, next) => {
   if (res.locals.validCrendtials.isValid) {
     const username = res.locals.username;
-    const password = bcrypt.hashSync(res.locals.password, SALT_WORK_FACTOR);
+    const password = res.locals.password;
     const email = res.locals.email;
     const phone = res.locals.phone;
-    
-    userModel
-      .create({ username, password, email, phone })
-      .then(result => {
-        res.locals.user = result;
-        next();
-      })
-      .catch(err => {
-        res.json({ error: "failed database validation" });
-      });
-  } else {
-    res.json(res.locals.validCrendtials);
+    // BCRYPT - ENCRYPTING PASSWORD
+    bcryptjs.genSalt(SALT_WORK_FACTOR, (err, salt)=>{
+        if(err){
+            console.log("GENSALT ERROR:",err); 
+            return; 
+        }
+        else{
+            bcryptjs.hash(password, salt, (err, bcryptedPassword)=>{
+                if(err){
+                    console.log("ERROR INSIDE USERCONTROLLER:", err)
+                }
+                else{ 
+                    let password = bcryptedPassword;
+                    // DATABASE - SAVING NEW USER TO DB
+                    userModel
+                    .create({ username, password, email, phone })
+                    .then((result) => {
+                    res.locals.user = result;
+                    res.json(result);
+                    //next();
+                    })
+                    .catch((err) => {
+                    //console.log(err);
+                    //res.json(JSON.stringify(err));
+                    res.json({ error: "validation" });
+                    //next();
+                    });
+                }
+            });
+        }    
+    }); 
+  } 
+  else {
+    console.log('failed tests!!!');
+    res.json(validCrendtials);
   }
 };
+// userController.readUser = (req, res, next) => {
+//     const id = req.body.userID;
+//     userModel.findOne({_id: id})
+//     .then((result)=>{
+//         console.log(result);
+//         next();
+//     })
+//     .catch((err)=>{
+//         console.log(err);
+//         next();
+//     });
+// };
+// userController.updateUser = (req, res, next) => {
+//     // make object conditionally based on what fields are being updated
+//     userModel.update({_id: id}, {$set: {}})
+//     .then(
 
-userController.userRead = (req, res, next) => {
-  const id = req.body.userId;
-  userModel
-    .findOne({ _id: id })
-    .then(result => {
-      res.locals.user = result;
-      next();
-    })
-    .catch(err => {
-      res.json({ error: "database readUser" });
-    });
-};
+//     )
+//     .catch(
 
-userController.userUpdate = (req, res, next) => {
-  // make object conditionally based on what fields are being updated
-  let { userId, username, password, email, phone } = req.body;
-  userModel
-    .update({ _id: userId }, { $set: { username, password, email, phone } })
-    .then(result => {
-      // returns a update object
-      res.locals = { update: "success" };
-      next();
-    })
-    .catch(err => {
-      res.json({ error: "database updateUser" });
-    });
-};
-
-userController.userDelete = (req, res, next) => {
-  let id = req.body.userId;
-  userModel
-    .findByIdAndRemove(id)
-    .then(result => {
-      res.locals.user = result;
-      next();
-    })
-    .catch(err => {
-      res.json({ error: "database deleteUser", err });
-    });
-};
+//     );
+// };
+// userController.deleteUser = (req, res, next) => {
+//     let id = req.body.id;
+//     userModel.findByIdAndRemove(id)
+//     .then()
+//     .catch();
+// };
 
 module.exports = userController;

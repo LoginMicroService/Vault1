@@ -5,27 +5,31 @@ const formValidationController = require("../controllers/formValidationControlle
 
 router.post("/user/create", 
     formValidationController.validateUserCreate,
-    userController.userCreate, 
+    userController.createUser, 
     (req, res) => {
         res.json(res.locals.user);
-    });
+    }
+);
 
-router.post("/user/read", 
-    userController.userRead, 
-    (req, res) => {
-        res.json(res.locals.user);
-    });
+// router.post("/user/read", 
+//     userController.readUser, 
+//     (req, res) => {
+//         res.json(res.locals.user);
+//     }
+// );
 
-router.post("/user/update", 
-    userController.userUpdate, 
-    (req, res) => {
-        res.json(res.locals);
-    });
+// router.post("/user/update", 
+//     userController.updateUser, 
+//     (req, res) => {
+//         res.json(res.locals);
+//     }
+// );
 
-router.post("/user/delete", 
-    userController.userDelete, 
-    (req, res) => {
-        res.json(res.locals.user);
-    });
+// router.post("/user/delete", 
+//     userController.deleteUser, 
+//     (req, res) => {
+//         res.json(res.locals.user);
+//     }
+// );
 
 module.exports = router;
