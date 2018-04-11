@@ -3,9 +3,10 @@ var validator = require('validator');
 const userController = {};
 const bcryptjs = require("bcryptjs"); 
 
-userController.verifyJWT = (req, res) => {
+userController.verifyEncryptedCookie = (req, res) => {
 
 }; 
+
 userController.validateCreateUser = (req, res) => {
   let { username, password, email, phone } = req.body;
   let validCrendtials = {};
