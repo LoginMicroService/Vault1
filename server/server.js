@@ -1,32 +1,38 @@
+
+
+// EXPRESS
 const express = require("express"); 
 const PORT = process.env.PORT || "3333";
 const app = express(); 
 
-
-
-const userRouter = require("./routers/userRouter"); 
-const bodyParser = require("body-parser"); 
-
-// BODY PARSER - Configure
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 // MONGOOSE
+const DBNAME = "vault1";
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/vault1")
+mongoose.connect(`mongodb://localhost/${DBNAME}`)
 .then(
-    () => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
+    () => { 
+       console.log('connected to database');
+    },
     err => { 
-        res.json(JSON.stringify(err));
+        console.log(err); 
      }
 );
 
+// BODY PARSER
+const bodyParser = require("body-parser"); 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// public 
+// ROUTERS
+const userRouter = require("./routers/userRouter"); 
+
+// STATIC FILES 
 app.use(express.static("./public")); 
-// routers
+
+// ROUTES
 app.use("/api", userRouter); 
 
+// START SERVER
 app.listen(PORT, ()=>{
     console.log("Server running on port: ", PORT); 
 });
