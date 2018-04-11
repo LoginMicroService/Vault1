@@ -1,5 +1,6 @@
-
-
+const path = require("path");
+// USERCONTROLLER
+const authController = require("./controllers/authController"); 
 // EXPRESS
 const express = require("express"); 
 const PORT = process.env.PORT || "3333";
@@ -17,7 +18,9 @@ mongoose.connect(`mongodb://localhost/${DBNAME}`)
         console.log(err); 
      }
 );
-
+// COOKIEPARSER
+const cookieParser = require("cookie-parser");
+app.use(cookieParser()); 
 // BODY PARSER
 const bodyParser = require("body-parser"); 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,9 +30,23 @@ app.use(bodyParser.json());
 const userRouter = require("./routers/userRouter"); 
 
 // STATIC FILES 
-app.use(express.static("./public")); 
+// bundle.js will be inside build folder
+app.use(express.static("build")); 
 
 // ROUTES
+app.get("/", authController.sessionVerification, (req, res)=>{
+    if(res.locals.isVerified){
+        // send them their page html skeleton with bundle.js inside 
+        res.cookie("sessionId", req.cookies.sessioinId, {httpOnly: true}); 
+        res.sendFile(path.join(__dirname, "../client/verifiedUserPage.html")); 
+    }
+    else{
+        // route user to signup login page
+        res.sendFile(path.join(__dirname,"../client/signUpLogin.html")); 
+    }
+});
+    // route for bundle.js
+
 app.use("/api", userRouter); 
 
 // START SERVER

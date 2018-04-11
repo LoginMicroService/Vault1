@@ -3,10 +3,6 @@ const userModel = require("../models/userModel");
 const userController = {};
 const bcryptjs = require("bcryptjs"); 
 
-userController.verifyEncryptedCookie = (req, res) => {
-
-}; 
-
 
 userController.createUser = (req, res, next) => {
   if (res.locals.validCrendtials.isValid) {
